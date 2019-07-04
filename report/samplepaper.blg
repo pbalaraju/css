@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: samplepaper.aux
+The style file: splncs04.bst
+Database file #1: samplepaper.bib.bib
+Warning--I didn't find a database entry for "ref_article1"
+Warning--I didn't find a database entry for "ref_lncs1"
+Warning--I didn't find a database entry for "ref_book1"
+Warning--I didn't find a database entry for "ref_proc1"
+Warning--I didn't find a database entry for "ref_url1"
+Too many commas in name 1 of "J. Larson, S. Mattu, L. Kirchner , J. Angwin" for entry compasdataset
+while executing---line 3005 of file splncs04.bst
+Too many commas in name 1 of "J. Larson, S. Mattu, L. Kirchner , J. Angwin" for entry compasdataset
+while executing---line 3079 of file splncs04.bst
+You've used 12 entries,
+            2850 wiz_defined-function locations,
+            665 strings with 7011 characters,
+and the built_in function-call counts, 7487 in all, are:
+= -- 658
+> -- 229
+< -- 10
++ -- 94
+- -- 82
+* -- 449
+:= -- 949
+add.period$ -- 27
+call.type$ -- 12
+change.case$ -- 93
+chr.to.int$ -- 0
+cite$ -- 12
+duplicate$ -- 641
+empty$ -- 681
+format.name$ -- 93
+if$ -- 1676
+int.to.chr$ -- 0
+int.to.str$ -- 12
+missing$ -- 122
+newline$ -- 42
+num.names$ -- 24
+pop$ -- 254
+preamble$ -- 1
+purify$ -- 64
+quote$ -- 0
+skip$ -- 213
+stack$ -- 0
+substring$ -- 446
+swap$ -- 338
+text.length$ -- 10
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 48
+warning$ -- 0
+while$ -- 63
+width$ -- 14
+write$ -- 130
+(There were 2 error messages)
