@@ -3,6 +3,10 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: samplepaper.aux
 The style file: splncs04.bst
 Database file #1: samplepaper.bib.bib
+Repeated entry---line 216 of file samplepaper.bib.bib
+ : @inproceedings{hardt2016equality
+ :                                 ,
+I'm skipping whatever remains of this entry
 Warning--I didn't find a database entry for "ref_article1"
 Warning--I didn't find a database entry for "ref_lncs1"
 Warning--I didn't find a database entry for "ref_book1"
@@ -10,47 +14,48 @@ Warning--I didn't find a database entry for "ref_proc1"
 Warning--I didn't find a database entry for "ref_url1"
 Too many commas in name 1 of "J. Larson, S. Mattu, L. Kirchner , J. Angwin" for entry compasdataset
 while executing---line 3005 of file splncs04.bst
+Warning--empty journal in feldman2015computational
 Too many commas in name 1 of "J. Larson, S. Mattu, L. Kirchner , J. Angwin" for entry compasdataset
 while executing---line 3079 of file splncs04.bst
-You've used 12 entries,
+You've used 24 entries,
             2850 wiz_defined-function locations,
-            665 strings with 7011 characters,
-and the built_in function-call counts, 7487 in all, are:
-= -- 658
-> -- 229
-< -- 10
-+ -- 94
-- -- 82
-* -- 449
-:= -- 949
-add.period$ -- 27
-call.type$ -- 12
-change.case$ -- 93
+            731 strings with 9076 characters,
+and the built_in function-call counts, 14305 in all, are:
+= -- 1244
+> -- 413
+< -- 23
++ -- 171
+- -- 146
+* -- 865
+:= -- 1803
+add.period$ -- 48
+call.type$ -- 24
+change.case$ -- 170
 chr.to.int$ -- 0
-cite$ -- 12
-duplicate$ -- 641
-empty$ -- 681
-format.name$ -- 93
-if$ -- 1676
+cite$ -- 25
+duplicate$ -- 1255
+empty$ -- 1319
+format.name$ -- 167
+if$ -- 3195
 int.to.chr$ -- 0
-int.to.str$ -- 12
-missing$ -- 122
-newline$ -- 42
-num.names$ -- 24
-pop$ -- 254
+int.to.str$ -- 24
+missing$ -- 239
+newline$ -- 78
+num.names$ -- 48
+pop$ -- 479
 preamble$ -- 1
-purify$ -- 64
+purify$ -- 120
 quote$ -- 0
-skip$ -- 213
+skip$ -- 409
 stack$ -- 0
-substring$ -- 446
-swap$ -- 338
-text.length$ -- 10
+substring$ -- 849
+swap$ -- 670
+text.length$ -- 23
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 48
-warning$ -- 0
-while$ -- 63
-width$ -- 14
-write$ -- 130
-(There were 2 error messages)
+type$ -- 94
+warning$ -- 1
+while$ -- 126
+width$ -- 26
+write$ -- 250
+(There were 3 error messages)

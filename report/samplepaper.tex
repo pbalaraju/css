@@ -137,15 +137,45 @@ As depicted in Fig. \ref{fig:disparates}, $C_1$ is unfair due to disparate impac
 \begin{split}
 P(\hat{y_i} \neq y_i | y_i = 1,i \in S) = P(\hat{y_i} = 1|i \neq y_i | y_i = 1,i \notin S) \\
 P(\hat{y_i} \neq y_i | y_i = 0,i \in S) = P(\hat{y_i} = 1|i \neq y_i | y_i = 0,i \notin S)
-\label{eq:disparateimpact}
+\label{eq:disparatemis}
 \end{split}
 \end{equation}
 Fig. \ref{fig:disparates} shows that $C_1$ and $C_2$ are unfair due to disparate mistreatment because their rate of erroneous decisions for males and females are different: $C_1$ has different false negatives for males and females (0.0 and 0.5 respectively) \cite{zafar2017fairness}.
 \end{enumerate}
 %--------------------------------------------------------------------------------
 \subsection{Metrics}
-
+Disparate treatment and disparate impact is measured using $p\%$ rule. The $p\%$ \cite{biddle2006adverse} rule is an empirical rule which does not allow sensitive group identification to be lower than a set percentage of non-sensitive group identification:
+\begin{equation}
+pRule = min\{\frac{P(\hat{y_1}|i \in S)}{P(\hat{y_1}|i \notin S)},\frac{P(\hat{y_1}|i \notin S)}{P(\hat{y_1}|i \in S)}\}
+\label{eq:prule}
+\end{equation}
+Let us consider a specific instantiation supported by the U.S Equal Employment Opportunity Commission: the  "80\%-rule". The $p\%$ rule states that the ratio between the percentage of subjects having a certain sensitive attribute value assigned the positive decision outcome and the percentage of subjects not having the value also assigned the positive outcome should be non less than p:100 \cite{zafar2015fairness}.\\
+On the other hand, the disparate mistreatment elimination conditions in Eq. \ref{eq:disparatemis}, it is measured using the following measures \cite{krasanakis2018adaptive}:
+\begin{equation}
+\begin{split}
+D_{FPR} = P(\hat{y_i} | y_i = 1, i \in S) - P(\hat{y_i} | y_i = 1, i \notin S) \\
+D_{FNR} = P(\hat{y_i} | y_i = 0, i \in S) - P(\hat{y_i} | y_i = 0, i \notin S)
+\label{eq:disparatefprfnr1}
+\end{split}
+\end{equation}
+The overall disparate mistreatment is a combination of the above two metrics:
+\begin{equation}
+|D_{FPR}| + |D_{FNR}|
+\label{eq:disparatefprfnr2}
+\end{equation}
 %--------------------------------------------------------------------------------
+\subsection{Related Work}
+Methodologies to reduce bias can be boradly classified into the following groups:
+\begin{enumerate}
+\item Preprocessing the training data: this is based on the assumption that disparate impact of the trained classifier is due to the disparate impact on the training data. In order to avoid the disparate impact, the sensitive attributes are ignored. However, ignoring the sensitive attribute information may still lead to disparate impact in outcomes: since automated decision making systems are often trained on historical data , if a group with certain sensitive attribute was unfairly treated in the past, this unfairness may persist in future predictions through indirect discrimination, leading to disparate impact \cite{zafar2015fairness}. These approaches include massaging the dataset \cite{calders2009building} \cite{kamiran2009classifying} \cite{kamiran2012data} \cite{vzliobaite2011handling} by changing class labels that are identified as mislabeled due to bias and reweighting training samples so that more importance is places on sensitive sttributes \cite{calders2009building} \cite{kamiran2012data}.
+\item Training under fairness constraints: solves disparate impact by adjusting the training rules by editing the rules themselves \cite{calders2013controlling} \cite{zafar2015fairness} or by introducing linear programs constraints \cite{celis2017ranking} \cite{dwork2012fairness} \cite{romei2014multidisciplinary} \cite{zafar2015fairness}.
+\item Edit posteriors: these methods attempt to edit posteriors to satisfy fairness coonstrains but requires information about the sensitive group to make appropriate decisions \cite{dionne2014economic} \cite{doherty2012information} \cite{feldman2015computational} \cite{hardt2016equality}. 
+\end{enumerate}
+%---------------------------------------------------------------------------------
+\section{Methodology}
+In this section, we will discuss some of the methods that have been proposed to mitigate bias in the traning data to achieve accuracy.
+\subsection{Adaptive Sensitive Reweighting + CULEP} 
+%---------------------------------------------------------------------------------
 \subsection{A Subsection Sample}
 Please note that the first paragraph of a section or subsection is
 not indented. The first paragraph that follows a table, figure,

@@ -3,10 +3,46 @@
 \providecommand{\urlprefix}{URL }
 \providecommand{\doi}[1]{https://doi.org/#1}
 
+\bibitem{biddle2006adverse}
+Biddle, D.: Adverse impact and test validation: A practitioner's guide to valid
+  and defensible employment testing. Gower Publishing, Ltd. (2006)
+
+\bibitem{calders2009building}
+Calders, T., Kamiran, F., Pechenizkiy, M.: Building classifiers with
+  independency constraints. In: 2009 IEEE International Conference on Data
+  Mining Workshops. pp. 13--18. IEEE (2009)
+
+\bibitem{calders2013controlling}
+Calders, T., Karim, A., Kamiran, F., Ali, W., Zhang, X.: Controlling attribute
+  effect in linear regression. In: 2013 IEEE 13th International Conference on
+  Data Mining. pp. 71--80. IEEE (2013)
+
 \bibitem{calders2010three}
 Calders, T., Verwer, S.: Three naive bayes approaches for discrimination-free
   classification. Data Mining and Knowledge Discovery  \textbf{21}(2),
   277--292 (2010)
+
+\bibitem{celis2017ranking}
+Celis, L.E., Straszak, D., Vishnoi, N.K.: Ranking with fairness constraints.
+  arXiv preprint arXiv:1704.06840  (2017)
+
+\bibitem{dionne2014economic}
+Dionne, G., Rothschild, C.: Economic effects of risk classification bans. The
+  Geneva Risk and Insurance Review  \textbf{39}(2),  184--221 (2014)
+
+\bibitem{doherty2012information}
+Doherty, N.A., Kartasheva, A.V., Phillips, R.D.: Information effect of entry
+  into credit ratings market: The case of insurers' ratings. Journal of
+  Financial Economics  \textbf{106}(2),  308--330 (2012)
+
+\bibitem{dwork2012fairness}
+Dwork, C., Hardt, M., Pitassi, T., Reingold, O., Zemel, R.: Fairness through
+  awareness. In: Proceedings of the 3rd innovations in theoretical computer
+  science conference. pp. 214--226. ACM (2012)
+
+\bibitem{feldman2015computational}
+Feldman, M.: Computational fairness: Preventing machine-learned discrimination
+  (2015)
 
 \bibitem{feldman2015certifying}
 Feldman, M., Friedler, S.A., Moeller, J., Scheidegger, C., Venkatasubramanian,
@@ -23,6 +59,16 @@ Hardt, M., Price, E., Srebro, N., et~al.: Equality of opportunity in supervised
 J.~Larson, S.~Mattu, L.K.J.A.: {COMPAS dataset}.
   \url{https://github.com/propublica/compas-analysis} (2017), [COMPAS dataset
   (2017)]
+
+\bibitem{kamiran2009classifying}
+Kamiran, F., Calders, T.: Classifying without discriminating. In: 2009 2nd
+  International Conference on Computer, Control and Communication. pp.~1--6.
+  IEEE (2009)
+
+\bibitem{kamiran2012data}
+Kamiran, F., Calders, T.: Data preprocessing techniques for classification
+  without discrimination. Knowledge and Information Systems  \textbf{33}(1),
+  1--33 (2012)
 
 \bibitem{kamiran2010discrimination}
 Kamiran, F., Calders, T., Pechenizkiy, M.: Discrimination aware decision tree
@@ -55,6 +101,10 @@ Pedreshi, D., Ruggieri, S., Turini, F.: Discrimination-aware data mining. In:
   Proceedings of the 14th ACM SIGKDD international conference on Knowledge
   discovery and data mining. pp. 560--568. ACM (2008)
 
+\bibitem{romei2014multidisciplinary}
+Romei, A., Ruggieri, S.: A multidisciplinary survey on discrimination analysis.
+  The Knowledge Engineering Review  \textbf{29}(5),  582--638 (2014)
+
 \bibitem{zafar2017fairness}
 Zafar, M.B., Valera, I., Gomez~Rodriguez, M., Gummadi, K.P.: Fairness beyond
   disparate treatment \& disparate impact: Learning classification without
@@ -65,5 +115,10 @@ Zafar, M.B., Valera, I., Gomez~Rodriguez, M., Gummadi, K.P.: Fairness beyond
 \bibitem{zafar2015fairness}
 Zafar, M.B., Valera, I., Rodriguez, M.G., Gummadi, K.P.: Fairness constraints:
   Mechanisms for fair classification. arXiv preprint arXiv:1507.05259  (2015)
+
+\bibitem{vzliobaite2011handling}
+{\v{Z}}liobaite, I., Kamiran, F., Calders, T.: Handling conditional
+  discrimination. In: 2011 IEEE 11th International Conference on Data Mining.
+  pp. 992--1001. IEEE (2011)
 
 \end{thebibliography}
