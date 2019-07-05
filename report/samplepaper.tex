@@ -52,11 +52,11 @@ Classification unfairness is often expressed through the notions of disparate tr
 \begin{table}[!htbp]
     \begin{minipage}{.40\linewidth}
       \centering
-\begin{tabular}{c|c|c}
+\begin{tabular}{|c|c|c|}
+\hline 
+\multicolumn{3}{|c|}{User Attributes}\\
 \hline
-\multicolumn{3}{c}{User Attributes}\\
-\hline
-Sensitive & \multicolumn{2}{c}{Non-Sensitive} \\
+Sensitive\ & \multicolumn{2}{c}{Non-Sensitive} \vline \\
 \hline
 Gender   & Clothing Bulge    & Prox Crime\\
 \hline
@@ -76,7 +76,7 @@ Female3   &  0 & 0\\
 \end{minipage}%
     \begin{minipage}{.40\linewidth}
       \centering
-        \begin{tabular}{c}
+        \begin{tabular}{|c|}
         \hline
 Ground Truth \\
 (Has Weapon) \\
@@ -98,10 +98,10 @@ y\\
 \end{minipage}%
     \begin{minipage}{.20\linewidth}
       \centering
-        \begin{tabular}{c|c|c}
+        \begin{tabular}{|c|c|c|}
         \hline
-\multicolumn{3}{c}{Classifier's} \\
-\multicolumn{3}{c}{Decision to Stop} \\
+\multicolumn{3}{|c|}{Classifier's} \\
+\multicolumn{3}{|c|}{Decision to Stop} \\
 \hline
 $C_1$   &	$C_2$    &	$C_3$\\
 \hline
@@ -169,12 +169,10 @@ The overall disparate mistreatment is a combination of the above two metrics:
 \end{equation}
 %--------------------------------------------------------------------------------
 \subsection{Related Work}
-Methodologies to reduce bias can be boradly classified into the following groups:
-\begin{enumerate}
-\item Preprocessing the training data: this is based on the assumption that disparate impact of the trained classifier is due to the disparate impact on the training data. In order to avoid the disparate impact, the sensitive attributes are ignored. However, ignoring the sensitive attribute information may still lead to disparate impact in outcomes: since automated decision making systems are often trained on historical data , if a group with certain sensitive attribute was unfairly treated in the past, this unfairness may persist in future predictions through indirect discrimination, leading to disparate impact \cite{zafar2015fairness}. These approaches include massaging the dataset \cite{calders2009building} \cite{kamiran2009classifying} \cite{kamiran2012data} \cite{vzliobaite2011handling} by changing class labels that are identified as mislabeled due to bias and reweighting training samples so that more importance is places on sensitive sttributes \cite{calders2009building} \cite{kamiran2012data}.
-\item Training under fairness constraints: solves disparate impact by adjusting the training rules by editing the rules themselves \cite{calders2013controlling} \cite{zafar2015fairness} or by introducing linear programs constraints \cite{celis2017ranking} \cite{dwork2012fairness} \cite{romei2014multidisciplinary} \cite{zafar2015fairness}.
-\item Edit posteriors: these methods attempt to edit posteriors to satisfy fairness coonstrains but requires information about the sensitive group to make appropriate decisions \cite{dionne2014economic} \cite{doherty2012information} \cite{feldman2015computational} \cite{hardt2016equality}. 
-\end{enumerate}
+Methodologies to reduce bias can be boradly classified into the following groups:\\
+\textbf{Preprocessing the training data}: this is based on the assumption that disparate impact of the trained classifier is due to the disparate impact on the training data. In order to avoid the disparate impact, the sensitive attributes are ignored. However, ignoring the sensitive attribute information may still lead to disparate impact in outcomes: since automated decision making systems are often trained on historical data , if a group with certain sensitive attribute was unfairly treated in the past, this unfairness may persist in future predictions through indirect discrimination, leading to disparate impact \cite{zafar2015fairness}. These approaches include massaging the dataset \cite{calders2009building} \cite{kamiran2009classifying} \cite{kamiran2012data} \cite{vzliobaite2011handling} by changing class labels that are identified as mislabeled due to bias and reweighting training samples so that more importance is places on sensitive sttributes \cite{calders2009building} \cite{kamiran2012data}.\\
+\textbf{Training under fairness constraints}: solves disparate impact by adjusting the training rules by editing the rules themselves \cite{calders2013controlling} \cite{zafar2015fairness} or by introducing linear programs constraints \cite{celis2017ranking} \cite{dwork2012fairness} \cite{romei2014multidisciplinary} \cite{zafar2015fairness}. \\
+\textbf{Edit posteriors}: these methods attempt to edit posteriors to satisfy fairness coonstrains but requires information about the sensitive group to make appropriate decisions \cite{dionne2014economic} \cite{doherty2012information} \cite{feldman2015computational} \cite{hardt2016equality}
 %---------------------------------------------------------------------------------
 \section{Methodology}
 In this section, we will discuss some of the methods that have been proposed to mitigate bias in the traning data to achieve accuracy.
@@ -210,7 +208,7 @@ min\sum_{i=1}{\{w_i\hat{P}(\hat{y_i} \ne y_i) - \hat{P}(\hat{y_i} \ne \tilde{y_i
 We equate Eq.\ref{eq:objective2} to 0 which yields us:
 \begin{equation}
 w_i\hat{P}(\hat{y_i} \ne y_i) = \hat{P}(\hat{y_i} \ne \tilde{y_i})
-\label{eq:objective2}
+\label{eq:objective3}
 \end{equation}
 \begin{figure}[H]
   \centering
@@ -262,82 +260,185 @@ The authors have selected different Lipschitz constants for the senstive group $
 Conditional probability needs to consider the probability bias for inadequate labeling. Data mislabeling would occur with a fixed probability, depending on whether samples belong to the sensitive group which can be modeled as two Bernoulli processes, one for the sensitive group $S$ and the other for the non-sensitive group $S'$ as follows:
 \begin{equation}
 \begin{split}
-\beta_i = \beta_s | i \in S\\
-\beta_i = \beta_{s'} | i \notin S\\
+q_i = q_s | i \in S\\
+q_i = q_{s'} | i \notin S\\
 \end{split}
-\label{eq:lipschitzconstants}
+\label{eq:bernoulliconstants}
 \end{equation}
+Substituting the above in Eq.\ref{eq:objective3}, we get:
+\begin{equation}	
+w_i\hat{P}(\hat{y_i} \neq y_i) = L_{\beta i}(\pm \hat{P}(\hat{y_i} \neq y_i))\hat{P}(\hat{y_i} \neq y_i)q_i + L_{\beta i}(\mp \hat{P}(\hat{y_i} \neq y_i))\hat{P}(\hat{y_i} \neq y_i)(1-q_i)	
+\label{lipschitzweight}				    
+\end{equation}
+Convex Unedrlying Label Error Pertubation (CULEP) model can be obtained through previous propositions as:
+\begin{equation}
+w_1 = \alpha_i  L_{\beta i}(\hat{P}(\hat{y_i} \neq y_i)) + (1 - \alpha_i)  L_{\beta i}(\hat{P}(- \hat{y_i} \neq y_i))
+\label{finalequation}
+\end{equation}
+where $\alpha_i = q_i$ or $(1 - q_i)$ depending on the sign of $\pm$.
 %---------------------------------------------------------------------------------
-\subsection{A Subsection Sample}
-Please note that the first paragraph of a section or subsection is
-not indented. The first paragraph that follows a table, figure,
-equation etc. does not need an indent, either \cite{test1}.
-
-Subsequent paragraphs, however, are indented.
-
-\subsubsection{Sample Heading (Third Level)} Only two levels of
-headings should be numbered. Lower level headings remain unnumbered;
-they are formatted as run-in headings.
-
-\paragraph{Sample Heading (Fourth Level)}
-The contribution should contain no more than four levels of
-headings. Table~\ref{tab1} gives a summary of all heading levels.
-
-\begin{table}
-\caption{Table captions should be placed above the
-tables.}\label{tab1}
-\begin{tabular}{|l|l|l|}
+\section{Dataset Editing Deficiencies}
+In this section, we discuss some of the common shortcomings of dataset-editing fairness aware mechanisms discussed in the previous sections:\\
+\textbf{Limitations of Preprocessing}: They are dependent on the types of bias in the training data and use statistical models to eliminate them. This is a good approach for simple dataset-related biases but fails to take into consideration more intricate source of awareness. For example, there may exist weaker feature correlations \cite{calders2013controlling} that cause the bias against only a subset of the sensitive group. Moreover, certain types of biases are specific to certain classifiers. For example: linear classifiers have difficulty non-linear types of biases \cite{krasanakis2018adaptive}.\\
+\textbf{Heuristic Statistical Models}: Although, classifier bias has a high correlation with the training bias, their structural difficulties may cause inadequate bias elimination. The statistical models employed arrive at a minimum condition that guarantees correct but not necessarily full treatment \cite{krasanakis2018adaptive}.\\
+\textbf{Inability to justify disparate mistreatment eliminaton}: The relation between dataset bias and disparate mistreatment remains unclear till date \cite{krasanakis2018adaptive}. This is because: a) we cannot attribute the similar misclassification rates on the biased data and b) since disparate mistreatment is not caused by disparate impact, methods to remove sensitive attributes from training data (like massaging approaches, dataset editing labels) i.e constructing datasets unbiased does not solve the disparate mistreatment problem.
+%---------------------------------------------------------------------------------
+\section{Experimental Setup}
+\subsection{Datasets}
+The experiment is performed with two synthetic datasets suffering from disparate mistreatment previously proposed in \cite{zafar2017fairness} along with three datasets: the \textit{Adult} income dataset \cite{kohavi1996scaling}, the \textit{Bank} market dataset \cite{moro2011using} and the ProPublica \textit{COMPAS} dataset \cite{compasdataset}. The two synthetic datasets suffering from disparate mistreatment comprises of 10,000 samples wuth 2 features, a binary sensitive label and a binary classification label. Their features are obtained through bivariate normal distributions, chosen so that their sensitive labels yield $D_{FPR}D_{FNR} < 0$ and opposite sign $D_{FPR}D_{FNR} > 0$ \cite{krasanakis2018adaptive}. \textit{SynthOpp} dataset is formed by opposite signs of disparate mistreatment between FPR and FNR whereas, \textit{SynthSame} dataset is formed bz the same signs of FPR and FNR.\\
+The Adult dataset comprises of 48,842 test samples with 14 features and a binary label indicating whether income is above 50K \cite{krasanakis2018adaptive}. Gender is a sensitive feature in this dataset. The Bank dataset consists of 41,188 samples with 20 features and a binary label, indicating whether the client has subscribed to a term deposit \cite{krasanakis2018adaptive}. In this dataset, age less than 25 and greater than 60 is considered to be sensitive attribute. The COMPAS dataset used in \cite{zafar2015fairness} consists of 6,150 samples with 5 features (age category, gender, race, priors and charge degree)and a binary label indicating whether the defendant reoffended wthin two years \cite{krasanakis2018adaptive}. Here, race is considered as a sensitive attribute. Logistic regression without regularizer is employed as the base classifier.
+\subsection{Compared Methods}
+The following methods are compared against each other based on their performance to achieve the fairness constraints (accuracy, FPR, FNR) on the two synthetic and three datasets discussed previously.
+\begin{enumerate}
+\item \textbf{ASR+CULEP}: Adaptive Sensitive Reweighting along with the CULEP model to mitiagte disparate impact and mistreatment.
+\item \textbf{Covariance}: Models proposed in \cite{zafar2015fairness} \cite{zafar2017fairness} which employs covariance to approximate linear program constraints to mitigate disparate impact and disparate mistreatment.
+\item \textbf{Group Thresholding}: Model proposed in \cite{hardt2016equality} to mitigate disparate mistreatment.
+\item \textbf{Regularizer}:Method proposed in \cite{kamishima2012fairness} to remove prejudice-related disparate impact but, it still suffers from disparate treatment.
+\end{enumerate}
+%---------------------------------------------------------------------------------
+\section{Results}
+\begin{table}[!htbp]
+      \centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
 \hline
-Heading level &  Example & Font size and style\\
+{} & \multicolumn{9}{c}{Disparate Treatment} \vline \\
 \hline
-Title (centered) &  {\Large\bfseries Lecture Notes} & 14 point, bold\\
-1st-level heading &  {\large\bfseries 1 Introduction} & 12 point, bold\\
-2nd-level heading & {\bfseries 2.1 Printing Area} & 10 point, bold\\
-3rd-level heading & {\bfseries Run-in Heading in Bold.} Text follows & 10 point, bold\\
-4th-level heading & {\itshape Lowest Level Heading.} Text follows & 10 point, italic\\
+{} & \multicolumn{3}{c|}{COMPAS} & \multicolumn{3}{c|}{SynthOpp} & \multicolumn{3}{c|}{SynthSame} \vline \\
 \hline
+Fairness Approach & acc & $D_{FPR}$ & $D_{FNR}$ & acc & $D_{FPR}$ & $D_{FNR}$ & acc & $D_{FPR}$ & $D_{FNR}$ \\
+\hline
+None & $66\%$ & $17\%$  & $-25\%$  & $78\%$  & $-16\%$  & $19\%$  & $80\%$  & $25\%$  & $14\%$  \\
+\hline
+ASR+CULEP & $65\%$ & $-1\%$  & $-1\%$  & $81\%$  & $0\%$  & $0\%$  & $77\%$  & $0\%$  & $-16\%$  \\
+\hline
+Covariance & $66\%$ & $3\%$  & $-11\%$  & $80\%$  & $1\%$  & $2\%$  & $77\%$  & $14\%$  & $6\%$  \\
+\hline
+Group Thresholding & $65\%$ & $-1\%$  & $-1\%$  & $79\%$  & $0\%$  & $-1\%$  & $67\%$  & $2\%$  & $0\%$  \\
+\hline 
 \end{tabular}
+\\
+\caption{Disparate mistreatment elimination for logistic regression on both $|D_{FPR}|$ and $|D_{FNR}|$ constraints for disparate treatment}
+\label{tab:disptreatmenttable}
 \end{table}
 
 
-\noindent Displayed equations are centered and set on a separate
-line.
-\begin{equation}
-x + y = z
-\end{equation}
-Please try to avoid rasterized images for line-art diagrams and
-schemas. Whenever possible, use vector graphics instead (see
-Fig.~\ref{fig1}).
+\begin{table}[!htbp]
+      \centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+{} & \multicolumn{6}{c}{Avoiding Disparate Treatment} \vline \\
+\hline
+{} & \multicolumn{3}{c|}{SynthOpp} & \multicolumn{3}{c|}{SynthSame} \vline \\
+\hline
+Fairness Approach & acc & $D_{FPR}$ & $D_{FNR}$ & acc & $D_{FPR}$ & $D_{FNR}$ \\
+\hline
+None & $78\%$ & $-16\%$  & $19\%$  & $80\%$  & $25\%$  & $14\%$ \\
+\hline
+ASR+CULEP & $77\%$ & $0\%$  & $-1\%$  & $75\%$  & $0\%$  & $-13\%$ \\
+\hline
+Covariance & $75\%$ & $-1\%$  & $1\%$  & $69\%$  & $-1\%$  & $6\%$ \\
+\hline
+Group Thresholding & $-$ & $-$  & $-$  & $-$  & $-$  & $-$ \\
+\hline 
+\end{tabular}
+\\
+\caption{Disparate mistreatment elimination for logistic regression on both $|D_{FPR}|$ and $|D_{FNR}|$ constraints for avoiding disparate treatment}
+\label{tab:avoiddisptreatmenttable}
+\end{table}
 
-\begin{figure}
-\includegraphics[width=\textwidth]{fig1.eps}
-\caption{A figure caption is always placed below the illustration.
-Please note that short captions are centered, while long ones are
-justified by the macro package automatically.} \label{fig1}
-\end{figure}
+\begin{table}[!htbp]
+      \centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+{} & \multicolumn{2}{c|}{Adult} & \multicolumn{2}{c|}{Bank} \vline \\
+\hline
+Fairness Approach & pRule & acc & pRule & acc\\
+\hline
+None & $27\%$ & $85\%$  & $31\%$  & $91\%$  \\
+\hline
+ASR+CULEP & $100\%$ & $82\%$  & $99\%$  & $89\%$  \\
+\hline
+Covariance & $94\%$ & $82\%$  & $83\%$  & $91\%$  \\
+\hline
+Group Thresholding & $85\%$ & $83\%$  & $100\%$  & $91\%$ \\
+\hline 
+\end{tabular}
+\\
+\caption{Adult dataset disparate impact elimination for logistic regression}
+\label{tab:dispimpact}
+\end{table}
 
-\begin{theorem}
-This is a sample theorem. The run-in heading is set in bold, while
-the following text appears in italics. Definitions, lemmas,
-propositions, and corollaries are styled the same way.
-\end{theorem}
+%---------------------------------------------------------------------------------
+%\subsection{A Subsection Sample}
+%Please note that the first paragraph of a section or subsection is
+%not indented. The first paragraph that follows a table, figure,
+%equation etc. does not need an indent, either \cite{test1}.
 %
-% the environments 'definition', 'lemma', 'proposition', 'corollary',
-% 'remark', and 'example' are defined in the LLNCS documentclass as well.
+%Subsequent paragraphs, however, are indented.
 %
-\begin{proof}
-Proofs, examples, and remarks have the initial word in italics,
-while the following text appears in normal font.
-\end{proof}
-For citations of references, we prefer the use of square brackets
-and consecutive numbers. Citations using labels or the author/year
-convention are also acceptable. The following bibliography provides
-a sample reference list with entries for journal
-articles~\cite{ref_article1}, an LNCS chapter~\cite{ref_lncs1}, a
-book~\cite{ref_book1}, proceedings without editors~\cite{ref_proc1},
-and a homepage~\cite{ref_url1}. Multiple citations are grouped
-\cite{ref_article1,ref_lncs1,ref_book1},
-\cite{ref_article1,ref_book1,ref_proc1,ref_url1}.
+%\subsubsection{Sample Heading (Third Level)} Only two levels of
+%headings should be numbered. Lower level headings remain unnumbered;
+%they are formatted as run-in headings.
+%
+%\paragraph{Sample Heading (Fourth Level)}
+%The contribution should contain no more than four levels of
+%headings. Table~\ref{tab1} gives a summary of all heading levels.
+%
+%\begin{table}
+%\caption{Table captions should be placed above the
+%tables.}\label{tab1}
+%\begin{tabular}{|l|l|l|}
+%\hline
+%Heading level &  Example & Font size and style\\
+%\hline
+%Title (centered) &  {\Large\bfseries Lecture Notes} & 14 point, bold\\
+%1st-level heading &  {\large\bfseries 1 Introduction} & 12 point, bold\\
+%2nd-level heading & {\bfseries 2.1 Printing Area} & 10 point, bold\\
+%3rd-level heading & {\bfseries Run-in Heading in Bold.} Text follows & 10 point, bold\\
+%4th-level heading & {\itshape Lowest Level Heading.} Text follows & 10 point, italic\\
+%\hline
+%\end{tabular}
+%\end{table}
+%
+%
+%\noindent Displayed equations are centered and set on a separate
+%line.
+%\begin{equation}
+%x + y = z
+%\end{equation}
+%Please try to avoid rasterized images for line-art diagrams and
+%schemas. Whenever possible, use vector graphics instead (see
+%Fig.~\ref{fig1}).
+%
+%\begin{figure}
+%\includegraphics[width=\textwidth]{fig1.eps}
+%\caption{A figure caption is always placed below the illustration.
+%Please note that short captions are centered, while long ones are
+%justified by the macro package automatically.} \label{fig1}
+%\end{figure}
+%
+%\begin{theorem}
+%This is a sample theorem. The run-in heading is set in bold, while
+%the following text appears in italics. Definitions, lemmas,
+%propositions, and corollaries are styled the same way.
+%\end{theorem}
+%%
+%% the environments 'definition', 'lemma', 'proposition', 'corollary',
+%% 'remark', and 'example' are defined in the LLNCS documentclass as well.
+%%
+%\begin{proof}
+%Proofs, examples, and remarks have the initial word in italics,
+%while the following text appears in normal font.
+%\end{proof}
+%For citations of references, we prefer the use of square brackets
+%and consecutive numbers. Citations using labels or the author/year
+%convention are also acceptable. The following bibliography provides
+%a sample reference list with entries for journal
+%articles~\cite{ref_article1}, an LNCS chapter~\cite{ref_lncs1}, a
+%book~\cite{ref_book1}, proceedings without editors~\cite{ref_proc1},
+%and a homepage~\cite{ref_url1}. Multiple citations are grouped
+%\cite{ref_article1,ref_lncs1,ref_book1},
+%\cite{ref_article1,ref_book1,ref_proc1,ref_url1}.
 %
 % ---- Bibliography ----
 %
@@ -349,36 +450,4 @@ and a homepage~\cite{ref_url1}. Multiple citations are grouped
 %
 \bibliographystyle{splncs04}
 \bibliography{samplepaper.bib}
-%\begin{thebibliography}{8}
-%\bibitem{ref_article1}
-%Author, F.: Article title. Journal \textbf{2}(5), 99--110 (2016)
-%
-%\bibitem{ref_lncs1}
-%Author, F., Author, S.: Title of a proceedings paper. In: Editor,
-%F., Editor, S. (eds.) CONFERENCE 2016, LNCS, vol. 9999, pp. 1--13.
-%Springer, Heidelberg (2016). \doi{10.10007/1234567890}
-%
-%\bibitem{ref_book1}
-%Author, F., Author, S., Author, T.: Book title. 2nd edn. Publisher,
-%Location (1999)
-%
-%\bibitem{ref_proc1}
-%Author, A.-B.: Contribution title. In: 9th International Proceedings
-%on Proceedings, pp. 1--2. Publisher, Location (2010)
-%
-%\bibitem{test1}
-%@inproceedings{kamishima2012fairness,
-%  title={Fairness-aware classifier with prejudice remover regularizer},
-%  author={Kamishima, Toshihiro and Akaho, Shotaro and Asoh, Hideki and Sakuma, Jun},
-%  booktitle={Joint European Conference on Machine Learning and Knowledge Discovery in Databases},
-%  pages={35--50},
-%  year={2012},
-%  organization={Springer}
-%}
-%
-%
-%\bibitem{ref_url1}
-%LNCS Homepage, \url{http://www.springer.com/lncs}. Last accessed 4
-%Oct 2017
-%\end{thebibliography}
 \end{document}
