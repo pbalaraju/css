@@ -3,8 +3,12 @@
 \usepackage{graphicx}
 \usepackage{bibentry}
 \usepackage{amsmath}
+\usepackage{nccmath}
 \usepackage{float}
 \usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{xfrac}
+\usepackage[noend]{algpseudocode}
 \nobibliography*
 
 \begin{document}
@@ -174,7 +178,95 @@ Methodologies to reduce bias can be boradly classified into the following groups
 %---------------------------------------------------------------------------------
 \section{Methodology}
 In this section, we will discuss some of the methods that have been proposed to mitigate bias in the traning data to achieve accuracy.
-\subsection{Adaptive Sensitive Reweighting + CULEP} 
+\subsection{Adaptive Sensitive Reweighting + CULEP}
+Analysis is conducted on binary probabilistic classifier, which produces probability estimates $\hat{P}(Y=y_i) = 1 - \hat{P}(Y \ne y_i)$ for samples $i$ with features $x_i$ and each class label $Y \in \{0,1\}$. This classifier estimates class labels as:
+\begin{equation}
+\hat{y_i} = argmax\hat{P}(Y=y_i) = argmin\hat{P}(Y \ne y_i) , Y \in \{0,1\}
+\end{equation}
+A well-calibrated classifier has the misclassification error $P(Y \ne y_i)$ reaching a minimization target in the learning process. For the training sample $i$, features $x_i$ and class labels $y_i$, there exists underlying class labels $\tilde{y_i}$ (unobservable) that yields estimated labels $\hat{y_i}$ which conforms to designated fairness and accuracy trade-offs. Training goals are two-fold: a) make the calssifier yield accurate predictions, minimize $\hat{P}(\hat{y_i} \ne y_i)$ and b) make classifier predictions approach the underlying labels, minimize ${\hat{P}(\hat{y_i} \ne y_i)}^2$. It is difficult to attain both of them when the original labels do not coincide with the underlying labels. 
+\begin{figure}[H]
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{img/Fig1.eps}
+  \caption{Probabilistic classifier training}
+  \label{fig:datalabels}
+\end{minipage}%
+\begin{minipage}{.35\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{img/Fig2.eps}
+  \caption{Directly training on observable desired labels}
+  \label{fig:underlabels}
+\end{minipage}
+\end{figure}
+Training the data labels could be achieved using the mechanism in Fig \ref{fig:datalabels}and training towards underlying labels could be done using the mechanism in Fig \ref{fig:underlabels}.However, estimating the underlying labels and directly using them for training is considered under data falsification under legal constraints. In order to solve this contradiction, weights $w_i$ are trained on the data labels which makes them equivalent to the unweighted training on the underlying labels. The goal is now is to minimize the weighted error and also bridge the gap between the weighted data labels and unweighted underlying labels.
+\begin{equation}
+min\sum_{i=1}{w_i\hat{P}(\hat{y_i} \ne y_i)} \\
+\label{eq:objective1}
+\end{equation}
+\begin{equation}
+min\sum_{i=1}{\{w_i\hat{P}(\hat{y_i} \ne y_i) - \hat{P}(\hat{y_i} \ne \tilde{y_i})}\}^2 
+\label{eq:objective2}
+\end{equation}
+We equate Eq.\ref{eq:objective2} to 0 which yields us:
+\begin{equation}
+w_i\hat{P}(\hat{y_i} \ne y_i) = \hat{P}(\hat{y_i} \ne \tilde{y_i})
+\label{eq:objective2}
+\end{equation}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.5\linewidth]{img/Fig3.eps}
+  \caption{Training on unobservable desired labels}
+  \label{fig:unobservelabels}
+\end{figure}
+The authors in \cite{krasanakis2018adaptive} have proposed a model which employs conditional probabilities to make informed estimations based on $\hat{P}(\hat{y_i} \ne y_i)$. This model achieves the goals by estimating the underlying labels while training on weighted original labels as seen in Fig.\ref{fig:unobservelabels} .This process shifts the focus from the training scheme to discovering probability estimation model that can train towards the goal than searching explicitly searching for underlying labels. The advantages of using this model are three fold: a) the classifier is not accuse of being trained on falsified data, b) selection of estimation models that trains towards objectives that could not be formulated as deficiencies in training data and c)there is no need to introduce massaging heuristics to distribute the relabeling.\\
+\begin{algorithm}
+\caption{Adaptive Sensitive Reweighting}\label{euclid}
+\begin{algorithmic}[1]
+\Function{REWEIGHT}{Classifier $C$, Data $D$, Sensitive Group $S$}
+\State $w_i \leftarrow \forall i \in D$
+\State $w_i,prev \leftarrow 1 + \sqrt{e} \forall i \in D$
+%\BState \emph{top}:
+\While {$\sum_{i \in D}\{w_i-w_i,prev\}^2 \geq e$} 
+\State Train $C$ samples: $i = (x_i,y_i) \in D$ and weights $\frac{w_j}{\sum_{j \in D}{w_j}}$.
+\State Use $C$ to Obtain $\hat{P}(\hat{y_i} \notin y_i)$.
+\State Estimate $\hat{P}(\hat{y_i} \notin \tilde{y_i})$ using $\hat{P}(\hat{y_i} \notin y_i) \forall i \in D$.
+\State $w_i,prev \leftarrow w_i \forall i \in D$
+\State $w_i \leftarrow \sfrac{P(\hat{y_i} \neq \tilde{y_i})}{P(\hat{y_i} \neq y_i)} \forall \in D$
+\EndWhile
+\Return trained classifier $C, \{w_i\}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+The weights are determined using the Convex Underlying Label Error Pertubation (CULEP) model. When the original labels coincide with the underlying labels we expect overfitting and similarly when they do not coincide, we expect underfitting. This is represented as follows:
+\begin{equation}
+(\hat{P}(\hat{y_i} \neq \tilde{y_i} | y_i = \tilde{y_i})-\hat{P}(\hat{y_i} \neq y_i))(\hat{P}(\hat{y_i} \neq \tilde{y_i} | y_i \neq \tilde{y_i})-\hat{P}(\hat{y_i} \neq y_i)) < 0
+\label{eq:overunderfit}
+\end{equation}
+To satisfy this property the authors in \cite{krasanakis2018adaptive} propose conditional probabilities by pertubating classifier error of training samples $i$. To achieve this, they multiply it with values of a non-decreasing convex function $L_{\beta i}(p_i) \geq 0$, $L_{\beta i}(0) = 1$ of pertubation paramters $p \in [-1,1]$ whose Lipschitz constant is proportional to $\beta_i^3$. Depending on overestimatio(+) or underestimation Eq. \ref{eq:overunderfit} can be represented as:
+\begin{equation}
+\begin{split}
+\hat{P}(\hat{y_i} \neq \tilde{y_i} | y_i = \tilde{y_i}) = L_{\beta i}(\pm \hat{P}(\hat{y_i} \neq y_i))\hat{P}(\hat{y_i} \neq y_i) \\
+\hat{P}(\hat{y_i} \neq \tilde{y_i} | y_i = \tilde{y_i}) = L_{\beta i}(\mp \hat{P}(\hat{y_i} \neq y_i))\hat{P}(\hat{y_i} \neq y_i) 
+\end{split}
+\label{eq:lipschitz}
+\end{equation}
+The authors have selected different Lipschitz constants for the senstive group $S$ and the non-sensitive group $S'$ as follows:
+\begin{equation}
+\begin{split}
+\beta_i = \beta_s | i \in S\\
+\beta_i = \beta_{s'} | i \notin S\\
+\end{split}
+\label{eq:lipschitzconstants}
+\end{equation}
+Conditional probability needs to consider the probability bias for inadequate labeling. Data mislabeling would occur with a fixed probability, depending on whether samples belong to the sensitive group which can be modeled as two Bernoulli processes, one for the sensitive group $S$ and the other for the non-sensitive group $S'$ as follows:
+\begin{equation}
+\begin{split}
+\beta_i = \beta_s | i \in S\\
+\beta_i = \beta_{s'} | i \notin S\\
+\end{split}
+\label{eq:lipschitzconstants}
+\end{equation}
 %---------------------------------------------------------------------------------
 \subsection{A Subsection Sample}
 Please note that the first paragraph of a section or subsection is
