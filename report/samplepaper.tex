@@ -7,6 +7,7 @@
 \usepackage{float}
 \usepackage{multirow}
 \usepackage{algorithm}
+\usepackage{amssymb}
 \usepackage{xfrac}
 \usepackage[noend]{algpseudocode}
 \nobibliography*
@@ -29,7 +30,7 @@
 Machine learning has seen a rapid growth in recent years in a variety of sectors and services. Automated decision making uses machine learning techniques to remove human interference . It predicts the decision based on past experience of similar situation but makes it challenging because the predictions need to match with accuracy. However, one its major concerns is misclassification errors caused due to bias in the training data. These errors put certain sensitive groups at an unfair advantage creating different types of unfairness: disparate impact, disparate treatment and disparate mistreatment. Therefore fairness concerns have become increasingly important. In this paper, we discuss some of the current methodologies developed recently to mitigate bias and achieve fairness like massaging of the labels, group thresholding, covariance and adaptive sensitive reweighting. We learn that it is unsufficient to remove the sensitive information for eliminating biases because it has an indirect correlation. We analyse and compare the performance of these methods based on different fairness metrics for three  datasets. We observe that adaptive sensitive reweighting model achieves better or similar trade-offs between accuracy and unfairness mitigation when compared to other fairness-aware approaches.
  
 
-\keywords{Machine Learning  \and Classifier \and Unfairness}
+\keywords{Machine Learning  \and Classifier \and Unfairness \and Bias in data}
 \end{abstract}
 %-------------------------------------------------------------------------------
 \section{Introduction}
@@ -176,6 +177,89 @@ Methodologies to reduce bias can be boradly classified into the following groups
 %---------------------------------------------------------------------------------
 \section{Methodology}
 In this section, we will discuss some of the methods that have been proposed to mitigate bias in the traning data to achieve accuracy.
+\subsection{Covariance-Based Models}
+In a binary classification task, we need to find the mapping function $f(x)$ between user feature vectors $x \in \mathbb{R}^d$ and class labels $y \in \{-1,1\}$. The task is achieved by utilizing a training set, ${(x_i, y_i)}_{i=1}^N$ to construct a mapping that works on unseen dataset. We need to look for a decision boundary defined by a set of parameters $\theta^*$, that achieves the greatest classification accuracy in a test set by minimizing a loss function over a training set $L(\theta)$ i.e $\theta^* = argmin_\theta L(\theta)$ \cite{zafar2015fairness}. Given an unseen feature vector $x_i$ from the test set, the classifer predicts $f_\theta(x_i) = 1$ if $d_{\theta}^*(x_i) \geq 0$ and $f_\theta(x_i) = -1$ otherwise, where $d_{\theta}^*(x)$ denotes the signed distance from the feature vector x to the decision boundary \cite{zafar2015fairness}.\\
+\textbf{Decision boundary covariance}: Decision boundary unfairness is defined as the covariance between the users' sensitive attributes, $\{z_i\}_{i=1}^N$ and the signed distance from the users' feature vectors to the decision boundary $\{d_\theta(x_i)\}_{i=1}^N$ which is represented as:
+\begin{equation}
+\begin {split}
+Cov(z,d_\theta(x)) = \mathbb{E}[(z-\bar{z})d_\theta(x)] - \mathbb{E}[(z-\bar{z})\bar{d}_\theta(x)]\\ 
+		           = \frac{1}{N}\sum_{i=1}^N(z_i - \bar{z})d_\theta(x_i)
+\end{split}
+\label{eq:cov1}
+\end{equation}
+where $\mathbb{E}[(z-\bar{z})d_\theta(x)]$ cancels out since $\mathbb{E}[(z-\bar{z})] = 0$.
+In linear models for classification like logistic regression or Support Vector Machines (SVM), the decision boundary is just the hyperplane defined by $\theta^Tx = 0$ which reduces the Eq. \ref{eq:cov1} to $\frac{1}{N}\sum_{i=1}^N(z_i - \bar{z})\theta^T(x_i)$ \cite{zafar2015fairness}.  Eq. \ref{eq:cov1} represents a convex function with respect to the decision boundary parameters $\theta$, since $d_\theta(x_i)$ is convex with respect to $\theta$ for all linear, convex margin-based classifiers \cite{zafar2015fairness}.\\
+\textbf{Maximizing accuracy under fairness constraints}: Maximize an accuracy object for example: pRule by finding the decision boundary parameters $\theta$ by minimizing the corresponding loss function over the training set under fairness constraints. This is done by minimizing $L(\theta)$ as follows :
+\begin{equation}
+\begin{split}
+\frac{1}{N}\sum_{i=1}^N(z_i - \bar{z})d_\theta(x_i) \leq c \\
+\frac{1}{N}\sum_{i=1}^N(z_i - \bar{z})d_\theta(x_i) \geq -c
+\end{split}
+\end{equation}
+where c is the covariance threshold which specifies an upper bound on the covariance between each sensitive attribute and the signed distance from the feature vector to the decision boundary \cite{zafar2015fairness}. As $c$ decreases to 0, then it increases the pRule but will potentially suffer from a larger trade-off in accuracy.\\
+\textbf{Maximizing fairness under accuracy constraints}: Underlying correlation between the class labels and the sensitive attributes in the training data is high. Even though it is very difficult to completely eliminate disparate impact, we need to make sure that decision making causes least possible disparate impact. In order to achieve this, the authors in \cite{zafar2015fairness} find the decision boundary parameters $\theta$ by minimizing the corresponding decision boundary covariance over the training set under constraints on the classifier loss function:
+\begin{equation}
+minimize |\frac{1}{N}\sum_{i=1}^N(z_i - \bar{z})d_\theta(x_i)|
+\end{equation}
+where $L(\theta)\leq(1+\gamma)L(\theta)^*$. Here $L(\theta)^*$ denotes the optimal loss over the training set provided by the unconstrained classifier and $\gamma \geq 0$ speicfies the maximal additional loss with respect to the loss provided by the unconstrained classifier. When $\gamma = 0$, we can achieve maximum fairness with no loss in accuracy.
+%---------------------------------------------------------------------------------------
+\subsection{Reguralizer Method}
+This method is implemented as a regularizer to reduce indirect prejudice(statistical dependence between sensitive features). Index to quantify the degree of indirect prejudice is called prejudice index (PI). $Y$, $X$ and $S$ are random variables corresponding to a class, non-sensitive feature, respectively. A training data set consists of the instances of these random variables,i.e: $D = {(y,x,s)}$ \cite{kamishima2012fairness}. The conditional probability of a class given non-sensitive and sensitive features is modeled by $M[Y|X,S;\odot]$, where $\odot$ is the set of modeled parameters which are estimated based on the maximum likelihood principle.
+\begin{equation}
+L(D;\odot) = \sum_{(y_i,x_i,s_i)\in D}{lnM[y_i|x_i,s_i;\odot]}
+\label{eq:reg1}
+\end{equation}
+Two types of regularizers were adopted. The first is a standard $L_2 ||\odot||_2^2$ to avoid over-fitting. The second regularizer, $R(D,\odot)$ enforces fair classification. Addition of the two regularizers to Eq.\ref{eq:reg1}, the objective funtion to minimize is obtained
+\begin{equation}
+L(D;\odot) + \eta R(D,\odot)+\frac{\lambda}{2}||\odot||_2^2
+\end{equation} 
+where $\lambda$ and $\eta$ are positive regularization parameters.\\
+A prejudice remover regularizer directly reduces the prejudice index which is denoted by $R_{PR}$  \cite{kamishima2012fairness}. The prejudice index is computed as follows:
+\begin{equation}
+PI = \sum_{Y,S}{\hat{Pr}[Y,S]ln\frac{\hat{P}r[Y,S]}{\hat{P}r[S]\hat{P}r[Y]}} = \sum_{X,S}{\hat{Pr}[X,S]}\sum_{y}{M[Y|X,S;\odot]}ln\frac{\hat{P}r[Y,S]}{\hat{P}r[S]\hat{P}r[Y]}
+\label{eq:reg2}
+\end{equation}
+Eq \ref{eq:reg2} can be rewritten by replacing $\sum_{X,S}{\hat{Pr}[X,S]}$ by $(\sfrac{1}{|D|})\sum_{x_i,s_i \in D}$ and removing the scaling factor $(\sfrac{1}{|D|})$, we get:
+\begin{equation}
+\sum_{x_i,s_i \in D}\sum_{y \in {0,1}}M[y|x_i,s_i;\odot]ln\frac{\hat{P}r[y,S]}{\hat{P}r[y]}
+\end{equation}
+${\hat{P}r[y,S]}$ is obtained is marginalizing $M[y|X,s_i;\odot]Pr^*[X|s]$ and then applying the sample mean to get the following equation:
+\begin{equation}
+{\hat{P}r[y,S]} \simeq \frac{\sum_{x_i,s_i \in D s.t s_i \in s}M[y|x_i,s;\odot]}{|{(x_i,s_i) \in D s.t s_i = s}|}
+\label{eq:reg3}
+\end{equation}
+\begin{equation}
+{\hat{P}r[y]} \simeq \frac{\sum_{x_i,s_i \in D}M[y|x_i,s_i;\odot]}{|D|}
+\label{eq:reg4}
+\end{equation}
+From Eq.\ref{eq:reg3} and Eq.\ref{eq:reg4}, the prejudice remover regularizer is computed as:
+\begin{equation}
+\sum_{x_i,s_i \in D}\sum_{y \in {0,1}}M[y|x_i,s_i;\odot]ln\frac{\hat{P}r[y|s_i]}{\hat{P}r[y]}
+\label{eq:reg5}
+\end{equation}
+This regularizer becomes large when a class is determined mainly based on sensitive features;thus, sensitive features becomes less influential in the final determination \cite{kamishima2012fairness}.
+%---------------------------------------------------------------------------------------
+\subsection{Group Thresholding}
+The author's goal in \cite{hardt2016equality} is to predict a true outcome $Y$ from features $X$ based on labeled training data, while ensuring that the prediction is non-discriminatory with respect to a specific protected attribute $A$. It can be assumed that supervised learning setting has labeled data that can be used to construct a predictor $\tilde{Y}(X)$ or $\tilde{Y}(X,A)$.
+\begin{definition}{Equalized odds}
+We say that a predictor $\hat{Y}$ satisfies \textit{equalized odds} with respect to protected attribute A and outcome Y, if $\hat{Y}$ and $A$ are independent conditional on Y \cite{hardt2016equality}.
+\begin{equation}
+Pr\{\hat{Y} = 1 | A = 0, Y = y\} = Pr\{\hat{Y} = 1 | A = 1, Y = y\}, y in {0,1}
+\end{equation}
+\end{definition} 
+\begin{definition}{Equal Opportunity}
+We say that a predictor $\hat{Y}$ satisfies \textit{equal opportunity} with respect to protected attribute A and outcome Y, if 
+$Pr\{\hat{Y} = 1 | A = 0, Y = 1\} = Pr\{\hat{Y} = 1 | A = 1, Y = 1\}$
+\end{definition}
+\begin{definition}{Oblivious}
+We say that a predictor $\hat{Y}$ or score $R$ is \textit{oblivious} if it only depends on the joint distribution of $(Y,A,Y)$ or $(Y,A,R)$ respectively \cite{hardt2016equality}.
+\end{definition}
+The goal is to obtain equalized odds or equal opportunity predictor $\hat{Y}$ from a possibly discriminatory learned binary predictor $\hat{Y}$ or score $R$. The model does not require changing the training process as it might introduce additional complexity but it will construct a non-discriminatory predictor which is derived from $\hat{Y}$ or $R$.
+\begin{definition}{Derived Predictor}
+A predictor $\tilde{Y}$ is derived from a random variable R and the protected attribute A if it is a possible randomized function of the random variables (R,A) alone. In particular, $\tilde{Y}$ is independent of X conditional on (R,A) \cite{hardt2016equality}.
+\end{definition}
+A protected attribute way of deriving a binary predictor from a score $R$ would be to threshold it using $\hat{Y} = \mathbb{I}\{R > t\}$ \cite{hardt2016equality}. If $R$ satisfies the equalized odds, even the predictor will and the optimal threshold would be chosen to balance false and true positive rates so as to minimize the expected loss.
+%---------------------------------------------------------------------------------------
 \subsection{Adaptive Sensitive Reweighting + CULEP}
 Analysis is conducted on binary probabilistic classifier, which produces probability estimates $\hat{P}(Y=y_i) = 1 - \hat{P}(Y \ne y_i)$ for samples $i$ with features $x_i$ and each class label $Y \in \{0,1\}$. This classifier estimates class labels as:
 \begin{equation}
@@ -299,7 +383,6 @@ The following methods are compared against each other based on their performance
 \section{Results}
 \subsection{Results for Disparate Mistreatment}
 Experiments for disparate mistreatment is explored both with and without the disparate treatment. In the first case, sensitive information is not included in the training and validation datasets, where as in the second case it is. Removing the sensitive group feature yields inadequate levels of prediction for the dataset. Table \ref{tab:disptreatmenttable} shows that when the sensitive information is available, ASR+CULEP outperforms covariance-based contraints in eliminating disparate mistreatments= and provides equally favourable results to group thresholding \cite{krasanakis2018adaptive}. It reduces the mistreatment by 12\% on the COMPAS dataset in exchange for 1\% accuracy compared to covariance based methods and yields identical results to the group thresholding. It performs well on all respects on SynthOpp dataset and in SythSame it reduces the overall mistreatment by 4\% when compared to covariance-based methods.\\
-Table \ref{tab:avoiddisptreatmenttable} depicts that when the disparate treatment is avoided, ASR+CULEP produces better accuracy vs. overall mistreatment elimination trade-offs compared to covariance based linear constraints \cite{krasanakis2018adaptive}. It yields (~$1\%$) overall disparate mistreatment elimination while preserving accuracy on the SynthOpp dataset and trades $6\%$ overall disparate mistreatment to gain $6\%$ accuracy on the SynthSame dataset.
 \begin{table}[!htbp]
       \centering
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
@@ -324,6 +407,7 @@ Group Thresholding & $65\%$ & $-1\%$  & $-1\%$  & $79\%$  & $0\%$  & $-1\%$  & $
 \label{tab:disptreatmenttable}
 \end{table}
 
+Table \ref{tab:avoiddisptreatmenttable} depicts that when the disparate treatment is avoided, ASR+CULEP produces better accuracy vs. overall mistreatment elimination trade-offs compared to covariance based linear constraints \cite{krasanakis2018adaptive}. It yields (~$1\%$) overall disparate mistreatment elimination while preserving accuracy on the SynthOpp dataset and trades $6\%$ overall disparate mistreatment to gain $6\%$ accuracy on the SynthSame dataset.
 
 \begin{table}[!htbp]
       \centering
