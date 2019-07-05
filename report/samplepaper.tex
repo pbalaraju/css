@@ -297,6 +297,9 @@ The following methods are compared against each other based on their performance
 \end{enumerate}
 %---------------------------------------------------------------------------------
 \section{Results}
+\subsection{Results for Disparate Mistreatment}
+Experiments for disparate mistreatment is explored both with and without the disparate treatment. In the first case, sensitive information is not included in the training and validation datasets, where as in the second case it is. Removing the sensitive group feature yields inadequate levels of prediction for the dataset. Table \ref{tab:disptreatmenttable} shows that when the sensitive information is available, ASR+CULEP outperforms covariance-based contraints in eliminating disparate mistreatments= and provides equally favourable results to group thresholding \cite{krasanakis2018adaptive}. It reduces the mistreatment by 12\% on the COMPAS dataset in exchange for 1\% accuracy compared to covariance based methods and yields identical results to the group thresholding. It performs well on all respects on SynthOpp dataset and in SythSame it reduces the overall mistreatment by 4\% when compared to covariance-based methods.\\
+Table \ref{tab:avoiddisptreatmenttable} depicts that when the disparate treatment is avoided, ASR+CULEP produces better accuracy vs. overall mistreatment elimination trade-offs compared to covariance based linear constraints \cite{krasanakis2018adaptive}. It yields (~$1\%$) overall disparate mistreatment elimination while preserving accuracy on the SynthOpp dataset and trades $6\%$ overall disparate mistreatment to gain $6\%$ accuracy on the SynthSame dataset.
 \begin{table}[!htbp]
       \centering
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
@@ -346,6 +349,8 @@ Group Thresholding & $-$ & $-$  & $-$  & $-$  & $-$  & $-$ \\
 \label{tab:avoiddisptreatmenttable}
 \end{table}
 
+\subsection{Results for Disparate Impact}
+Table \ref{tab:dispimpact} shows that ASR+CULEP has the ability to peform better to remove disparate impact when compared to the state-of-the-art solutions because it achieves higher pRule for smaller accuracy trade-offs. As seen in Table \ref{tab:dispimpact}, ASR+CULEP attains $6\%$ pRule gain for the same accuracy on the Adult dataset and $16\%$ pRule gain for $2\%$ accuracy loss on the Bank dataset.
 \begin{table}[!htbp]
       \centering
 \begin{tabular}{|c|c|c|c|c|}
@@ -367,6 +372,10 @@ Group Thresholding & $85\%$ & $83\%$  & $100\%$  & $91\%$ \\
 \caption{Adult dataset disparate impact elimination for logistic regression}
 \label{tab:dispimpact}
 \end{table}
+%---------------------------------------------------------------------------------
+\section{Conclusion}
+In this paper we have discussed one of the major problems of automated decision making process which causes misclassification error leading to an unfair advantage to a section of people bounded by sensitive attributes like gender, race, financial status and so on. We have learnt the different types of unfairness caused due to the misclassification problem and the corresponding metrics to measure them. Following that, we discussed some of the recent developments and state-of-the art solution to mitigate bias in the data along with the limitations of some of these methods on dataset editing deficiencies which hinders the methods to completely mitigate the unfairness constraints (disparate impact, disparate treatment and disparate mistreatment). Lastly, we performed an experiment on two synthetic (SynthOpp and SynthSame) and three real-world datasets (Adult, Bank and COMPAS) to evaluate the performance of four approaches (ASR+CULEP, Covariance, Group Thresholding and Regularizer) to mitigate disparate mistreatment and disparate impact. We observed that ASR+CULEP achieves better or similar trade-offs between accuracy and unfairness mitigation on the all the datasets.\\
+Results indicate that there is merit in further developing non-heuristic dataset editing mechanisms as competent alternatives to existing fairness-aware approaches \cite{krasanakis2018adaptive}. Further development can be done to adjust the CULEP parameters that guarantees convergence by training towards optimal sample weights rather than analytical derivation. As a next logical step, the performance of ASR+CULEP model can be tested on more datasets and with different base classifiers to identify limits and \ potential developmental areas to make it perform better than the state-of-the-art solution across many other fairness constraints.
 
 %---------------------------------------------------------------------------------
 %\subsection{A Subsection Sample}
